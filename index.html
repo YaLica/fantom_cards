@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Фанты для всей семьи</title>
 
-    <!-- OPEN GRAPH ТЕГИ ДЛЯ КРАСИВОГО ПРЕВЬЮ В СЕТИ -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="🎯 Игра Фанты 🚀">
     <meta property="og:description" content="👉 НАЖИМАЙ И ИГРАЙ! 🚀">
@@ -67,7 +66,7 @@
             background-repeat: no-repeat;
         }
 
-        /* Поддержка PNG и JPG на случай разных выгрузок */
+        /* Поддержка PNG и JPG */
         #slide-cover { background-image: url('cover.png'), url('cover.jpg'); }
         #slide-rules { background-image: url('rules.png'), url('rules.jpg'); }
         #slide-game { 
@@ -79,52 +78,32 @@
             padding: 20px 10px;
         }
 
-        /* Пульсирующая плашка «листай влево» */
-        .swipe-hint {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.6);
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            pointer-events: none;
-            animation: pulseHint 1.5s infinite alternate;
-            z-index: 10;
-        }
-
-        /* Навигационные кнопки «Далее» — теперь со стопроцентным откликом */
+        /* Кнопки навигации «Далее» и «К игре» внизу экрана */
         .nav-btn-next {
             position: absolute;
-            bottom: 30px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.3);
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.2);
             color: #fff;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            padding: 14px 28px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 14px 40px;
             border-radius: 30px;
             font-size: 18px;
             font-weight: bold;
-            border: 1px solid rgba(255,255,255,0.5);
+            border: 1px solid rgba(255,255,255,0.4);
             cursor: pointer;
             z-index: 20;
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
             transition: background 0.2s, transform 0.1s;
             -webkit-tap-highlight-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         .nav-btn-next:active {
-            background: rgba(255, 255, 255, 0.6);
-            transform: scale(0.95);
-        }
-
-        @keyframes pulseHint {
-            0% { transform: scale(0.95); opacity: 0.6; }
-            100% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 10px rgba(255,255,255,0.4); }
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateX(-50%) scale(0.95);
         }
 
         /* --- ИГРОВОЕ ПОЛЕ --- */
@@ -153,7 +132,7 @@
             margin-bottom: 30px;
         }
 
-        /* Универсальный класс кнопок */
+        /* Универсальный класс кнопок-картинок */
         .btn {
             cursor: pointer;
             border: none;
@@ -240,7 +219,7 @@
             transform: rotateY(180deg);
         }
 
-        /* Пульсирующая подсказка */
+        /* Подсказка */
         .tap-hint {
             color: #fff;
             font-size: 18px;
@@ -359,38 +338,29 @@
 <body>
 
     <div class="game-container">
-        <!-- Главная Карусель -->
         <div class="swiper-wrapper" id="mainSwiper">
             
-            <!-- Экран №1 — Обложка -->
             <div class="slide" id="slide-cover">
-                <div class="swipe-hint">листай влево</div>
                 <button class="nav-btn-next" id="goRules">Далее 👉</button>
             </div>
 
-            <!-- Экран №2 — Правила игры -->
             <div class="slide" id="slide-rules">
-                <div class="swipe-hint">листай влево</div>
                 <button class="nav-btn-next" id="goGame">К игре 👉</button>
             </div>
 
-            <!-- Экран №3 — Игровое поле -->
             <div class="slide" id="slide-game">
                 
-                <!-- Старт: Вся колода в сборе -->
                 <div class="deck-scene" id="deckScene">
                     <div class="main-deck"></div>
                     <button class="btn btn-start" id="btnStart"></button>
                 </div>
 
-                <!-- Основной процесс: Сетка карт -->
                 <div class="grid-scene" id="gridScene">
                     <div class="tap-hint" id="tapHint">НАЖМИ НА ЛЮБУЮ КАРТУ</div>
                     <div class="grid-container" id="gridContainer"></div>
                     <button class="btn btn-mix" id="btnMix"></button>
                 </div>
 
-                <!-- Наложение: Взлет фанта крупным планом -->
                 <div class="overlay-scene" id="overlayScene">
                     <div class="flying-card" id="flyingCard">
                         <div class="fly-face fly-front"></div>
@@ -403,22 +373,22 @@
         </div>
     </div>
 
-    <!-- АУДИОТЕКА ИГРЫ -->
     <audio id="sndStart" src="start.mp3" preload="auto"></audio>
     <audio id="sndOpen" src="card_open.mp3" preload="auto"></audio>
     <audio id="sndClose" src="card_close.mp3" preload="auto"></audio>
     <audio id="sndShuffle" src="shuffle.mp3" preload="auto"></audio>
 
     <script>
-        // --- ЧАСТЬ 1: Навигация карусели в Вебе ---
+        // --- ЧАСТЬ 1: Карусель со свайпами И кнопками ---
         const swiper = document.getElementById('mainSwiper');
         let currentSlide = 0;
+        let startX = 0;
 
         function updateSwiper() {
             swiper.style.transform = `translateX(-${currentSlide * 33.333}%)`;
         }
 
-        // Навешиваем чистые клики на кнопки навигации
+        // Кнопки навигации
         document.getElementById('goRules').addEventListener('click', (e) => {
             e.stopPropagation();
             currentSlide = 1;
@@ -431,19 +401,18 @@
             updateSwiper();
         });
 
-        // Классические свайпы без тотальной блокировки тач-событий экрана
-        let startX = 0;
+        // Полноценная обработка свайпов пальцем по экрану
         window.addEventListener('touchstart', (e) => {
             startX = e.touches[0].clientX;
         }, { passive: true });
 
         window.addEventListener('touchend', (e) => {
             let diffX = startX - e.changedTouches[0].clientX;
-            if (Math.abs(diffX) > 60) {
+            if (Math.abs(diffX) > 50) { // Чувствительность жеста
                 if (diffX > 0 && currentSlide < 2) {
-                    currentSlide++;
+                    currentSlide++; // Свайп влево — идем вперед
                 } else if (diffX < 0 && currentSlide > 0) {
-                    currentSlide--;
+                    currentSlide--; // Свайп вправо — возвращаемся назад
                 }
                 updateSwiper();
             }
@@ -547,26 +516,3 @@
             
             gridContainer.classList.add('shake');
             setTimeout(() => gridContainer.classList.remove('shake'), 400);
-
-            openedCards.clear(); 
-            
-            for (let i = cardsData.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [cardsData[i], cardsData[j]] = [cardsData[j], cardsData[i]];
-            }
-
-            buildGrid();
-        });
-
-        // --- ЧАСТЬ 3: Броня от воровства контента (Анти-угон) ---
-        window.addEventListener('contextmenu', (e) => e.preventDefault());
-        window.addEventListener('dragstart', (e) => e.preventDefault());
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) || (e.ctrlKey && e.key === 'U')) {
-                e.preventDefault();
-                return false;
-            }
-        });
-    </script>
-</body>
-</html>
