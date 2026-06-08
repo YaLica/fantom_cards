@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Тест Нового Репозитория</title>
+    <title>Фанты — Проверка фона</title>
 
     <style>
         /* Черный фон страницы */
@@ -17,41 +17,28 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: sans-serif;
         }
         
-        /* Временный яркий контейнер вместо фона, чтобы проверить работу сайта */
+        /* Игровой контейнер 9:16 строго по центру */
         .game-container {
             width: 100%;
             height: 100%;
             aspect-ratio: 9/16;
             max-width: 100vh;
             
-            /* Временный неоновый градиент для проверки */
-            background: linear-gradient(135deg, #1d2671 0%, #c33764 100%);
+            /* Пробуем подключить твой фон с учетом папки fantom_cards */
+            background-image: url('fantom_cards/images/main_bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
-        }
-
-        h1 {
-            color: #ffffff;
-            font-size: 24px;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin: 0;
-            padding: 20px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
         }
     </style>
 </head>
 <body>
 
-    <div class="game-container">
-        <h1>НОВЫЙ РЕПОЗИТОРИЙ РАБОТАЕТ! 🚀</h1>
-    </div>
+    <div class="game-container"></div>
 
 </body>
 </html>
