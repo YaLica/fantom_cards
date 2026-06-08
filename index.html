@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Фанты для всей семьи</title>
 
+    <!-- OPEN GRAPH ТЕГИ ДЛЯ КРАСИВОГО ПРЕВЬЮ В СЕТИ -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="🎯 Игра Фанты 🚀">
     <meta property="og:description" content="👉 НАЖИМАЙ И ИГРАЙ! 🚀">
@@ -13,7 +14,7 @@
     <meta property="og:image:height" content="1920">
 
     <style>
-        /* Обнуление стилей и запрет выделения (Часть 3: Анти-угон) */
+        /* Обнуление стилей и защита контента (Часть 3: Анти-угон) */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -22,7 +23,7 @@
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
-            -webkit-touch-callout: none; /* Запрет долгого тапа на iOS */
+            -webkit-touch-callout: none;
         }
 
         body, html {
@@ -40,8 +41,8 @@
         .game-container {
             width: 100%;
             height: 100%;
-            max-width: 56.25vh; /* 9/16 от высоты */
-            max-height: 177.78vw; /* 16/9 от ширины */
+            max-width: 56.25vh;
+            max-height: 177.78vw;
             position: relative;
             overflow: hidden;
             background: #222;
@@ -53,7 +54,8 @@
             display: flex;
             width: 300%;
             height: 100%;
-            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            will-change: transform;
         }
 
         .slide {
@@ -65,9 +67,9 @@
             background-repeat: no-repeat;
         }
 
-        /* Назначение фонов экранов 1 и 2 */
-        #slide-cover { background-image: url('cover.png'); }
-        #slide-rules { background-image: url('rules.png'); }
+        /* Поддержка PNG и JPG на случай разных выгрузок */
+        #slide-cover { background-image: url('cover.png'), url('cover.jpg'); }
+        #slide-rules { background-image: url('rules.png'), url('rules.jpg'); }
         #slide-game { 
             background: radial-gradient(circle, #2c3e50, #0f171e); 
             display: flex;
@@ -95,14 +97,37 @@
             z-index: 10;
         }
 
+        /* Навигационные кнопки «Далее» — теперь со стопроцентным откликом */
+        .nav-btn-next {
+            position: absolute;
+            bottom: 30px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            color: #fff;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border: 1px solid rgba(255,255,255,0.5);
+            cursor: pointer;
+            z-index: 20;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            transition: background 0.2s, transform 0.1s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .nav-btn-next:active {
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0.95);
+        }
+
         @keyframes pulseHint {
             0% { transform: scale(0.95); opacity: 0.6; }
             100% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 10px rgba(255,255,255,0.4); }
         }
 
         /* --- ИГРОВОЕ ПОЛЕ --- */
-        
-        /* Сцена «Большая колода» */
         .deck-scene {
             position: absolute;
             top: 0;
@@ -120,7 +145,7 @@
         .main-deck {
             width: 160px;
             height: 240px;
-            background-image: url('card_back.png');
+            background-image: url('card_back.png'), url('card_back.jpg');
             background-size: cover;
             background-position: center;
             border-radius: 12px;
@@ -128,7 +153,7 @@
             margin-bottom: 30px;
         }
 
-        /* Универсальный класс анимации кнопок */
+        /* Универсальный класс кнопок */
         .btn {
             cursor: pointer;
             border: none;
@@ -139,13 +164,14 @@
             transition: transform 0.2s ease;
             outline: none;
             -webkit-tap-highlight-color: transparent;
+            z-index: 6;
         }
         .btn:active { transform: scale(0.9); }
 
         .btn-start {
             width: 220px;
             height: 70px;
-            background-image: url('btn_start.png');
+            background-image: url('btn_start.png'), url('btn_start.jpg');
             animation: floatBtn 2s infinite ease-in-out;
         }
 
@@ -177,7 +203,7 @@
             aspect-ratio: 1/1;
             max-height: 60vh;
             padding: 5px;
-            perspective: 1000px; /* Для 3D переворотов */
+            perspective: 1000px;
         }
 
         /* Карточка в сетке */
@@ -203,19 +229,18 @@
         }
 
         .card-front {
-            background-image: url('card_back.png');
+            background-image: url('card_back.png'), url('card_back.jpg');
         }
 
         .card-back {
             transform: rotateY(180deg);
         }
 
-        /* Состояние перевернутой карты в сетке */
         .card-slot.is-open {
             transform: rotateY(180deg);
         }
 
-        /* Пульсирующая подсказка «НАЖМИ НА ЛЮБУЮ КАРТУ» */
+        /* Пульсирующая подсказка */
         .tap-hint {
             color: #fff;
             font-size: 18px;
@@ -236,19 +261,19 @@
         .btn-mix {
             width: 180px;
             height: 60px;
-            background-image: url('btn_mix.png');
+            background-image: url('btn_mix.png'), url('btn_mix.jpg');
             margin-top: 15px;
         }
 
-        /* Сцена «Взлёт фанта» (Активная парящая карта) */
+        /* Сцена «Взлёт фанта» */
         .overlay-scene {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.75);
-            z-index: 10;
+            background: rgba(0,0,0,0.85);
+            z-index: 30;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -289,7 +314,7 @@
         }
 
         .fly-front {
-            background-image: url('card_back.png');
+            background-image: url('card_back.png'), url('card_back.jpg');
         }
 
         .fly-back {
@@ -299,11 +324,12 @@
         .btn-ready {
             width: 160px;
             height: 55px;
-            background-image: url('btn_ready.png');
+            background-image: url('btn_ready.png'), url('btn_ready.jpg');
             margin-top: 30px;
             opacity: 0;
             transform: translateY(20px);
             transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 35;
         }
 
         .btn-ready.show {
@@ -311,7 +337,6 @@
             transform: translateY(0);
         }
 
-        /* Встряхивание при перемешивании */
         @keyframes shakeGrid {
             0% { transform: translate(0, 0); }
             20% { transform: translate(-8px, 5px); }
@@ -325,7 +350,6 @@
             animation: shakeGrid 0.4s ease-in-out;
         }
 
-        /* Полный запрет перетаскивания картинок */
         img {
             pointer-events: none;
             -webkit-user-drag: none;
@@ -335,29 +359,38 @@
 <body>
 
     <div class="game-container">
+        <!-- Главная Карусель -->
         <div class="swiper-wrapper" id="mainSwiper">
             
+            <!-- Экран №1 — Обложка -->
             <div class="slide" id="slide-cover">
                 <div class="swipe-hint">листай влево</div>
+                <button class="nav-btn-next" id="goRules">Далее 👉</button>
             </div>
 
+            <!-- Экран №2 — Правила игры -->
             <div class="slide" id="slide-rules">
                 <div class="swipe-hint">листай влево</div>
+                <button class="nav-btn-next" id="goGame">К игре 👉</button>
             </div>
 
+            <!-- Экран №3 — Игровое поле -->
             <div class="slide" id="slide-game">
                 
+                <!-- Старт: Вся колода в сборе -->
                 <div class="deck-scene" id="deckScene">
                     <div class="main-deck"></div>
                     <button class="btn btn-start" id="btnStart"></button>
                 </div>
 
+                <!-- Основной процесс: Сетка карт -->
                 <div class="grid-scene" id="gridScene">
                     <div class="tap-hint" id="tapHint">НАЖМИ НА ЛЮБУЮ КАРТУ</div>
                     <div class="grid-container" id="gridContainer"></div>
                     <button class="btn btn-mix" id="btnMix"></button>
                 </div>
 
+                <!-- Наложение: Взлет фанта крупным планом -->
                 <div class="overlay-scene" id="overlayScene">
                     <div class="flying-card" id="flyingCard">
                         <div class="fly-face fly-front"></div>
@@ -370,53 +403,52 @@
         </div>
     </div>
 
+    <!-- АУДИОТЕКА ИГРЫ -->
     <audio id="sndStart" src="start.mp3" preload="auto"></audio>
     <audio id="sndOpen" src="card_open.mp3" preload="auto"></audio>
     <audio id="sndClose" src="card_close.mp3" preload="auto"></audio>
     <audio id="sndShuffle" src="shuffle.mp3" preload="auto"></audio>
 
     <script>
-        // --- ЧАСТЬ 1: Карусель-Свайпер ---
+        // --- ЧАСТЬ 1: Навигация карусели в Вебе ---
         const swiper = document.getElementById('mainSwiper');
         let currentSlide = 0;
-        let startX = 0;
-        let isDragging = false;
-
-        // Обработка жестов свайпа
-        window.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX;
-            isDragging = true;
-        }, { passive: true });
-
-        window.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            let diffX = startX - e.touches[0].clientX;
-
-            // Если мы на Игровом Поле (Экран №3), блокируем свайп вперед (влево)
-            if (currentSlide === 2 && diffX > 0) {
-                isDragging = false;
-                return;
-            }
-        }, { passive: true });
-
-        window.addEventListener('touchend', (e) => {
-            if (!isDragging) return;
-            isDragging = false;
-            let diffX = startX - e.changedTouches[0].clientX;
-
-            if (Math.abs(diffX) > 50) { // Чувствительность свайпа
-                if (diffX > 0 && currentSlide < 2) {
-                    currentSlide++; // Листаем вперед
-                } else if (diffX < 0 && currentSlide > 0) {
-                    currentSlide--; // Свободно возвращаемся назад
-                }
-                updateSwiper();
-            }
-        });
 
         function updateSwiper() {
             swiper.style.transform = `translateX(-${currentSlide * 33.333}%)`;
         }
+
+        // Навешиваем чистые клики на кнопки навигации
+        document.getElementById('goRules').addEventListener('click', (e) => {
+            e.stopPropagation();
+            currentSlide = 1;
+            updateSwiper();
+        });
+
+        document.getElementById('goGame').addEventListener('click', (e) => {
+            e.stopPropagation();
+            currentSlide = 2;
+            updateSwiper();
+        });
+
+        // Классические свайпы без тотальной блокировки тач-событий экрана
+        let startX = 0;
+        window.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+        }, { passive: true });
+
+        window.addEventListener('touchend', (e) => {
+            let diffX = startX - e.changedTouches[0].clientX;
+            if (Math.abs(diffX) > 60) {
+                if (diffX > 0 && currentSlide < 2) {
+                    currentSlide++;
+                } else if (diffX < 0 && currentSlide > 0) {
+                    currentSlide--;
+                }
+                updateSwiper();
+            }
+        }, { passive: true });
+
 
         // --- ЧАСТЬ 2: Механика игрового процесса ---
         const deckScene = document.getElementById('deckScene');
@@ -428,26 +460,25 @@
         const btnReady = document.getElementById('btnReady');
         const tapHint = document.getElementById('tapHint');
 
-        // База данных карт (индексы от 1 до 25)
         let cardsData = Array.from({ length: 25 }, (_, i) => i + 1);
-        let openedCards = new Set(); // Здесь храним индексы открытых карт
+        let openedCards = new Set();
         let lastClickedSlot = null;
 
         // Кнопка НАЧИНАЕМ
         document.getElementById('btnStart').addEventListener('click', () => {
-            document.getElementById('sndStart').play();
+            try { document.getElementById('sndStart').play(); } catch(e){}
             deckScene.style.opacity = '0';
             deckScene.style.pointerEvents = 'none';
             
-            // Генерируем сетку и показываем поле
             buildGrid();
             gridScene.style.opacity = '1';
             gridScene.style.pointerEvents = 'auto';
 
-            // Самоликвидирующаяся подсказка через 3 секунды
             setTimeout(() => {
-                tapHint.style.opacity = '0';
-                setTimeout(() => tapHint.remove(), 500);
+                if(tapHint) {
+                    tapHint.style.opacity = '0';
+                    setTimeout(() => tapHint.remove(), 500);
+                }
             }, 3000);
         });
 
@@ -460,19 +491,17 @@
                 slot.dataset.id = cardId;
                 slot.dataset.index = index;
 
-                // Если карта числится открытой (после закрытия оверлея)
                 if (openedCards.has(cardId)) {
                     slot.classList.add('is-open');
                 }
 
                 slot.innerHTML = `
                     <div class="card-face card-front"></div>
-                    <div class="card-face card-back" style="background-image: url('card_${cardId}.png')"></div>
+                    <div class="card-face card-back" style="background-image: url('card_${cardId}.png'), url('card_${cardId}.jpg')"></div>
                 `;
 
-                // Клик по карте в сетке (Взлет Фанта)
                 slot.addEventListener('click', () => {
-                    if (openedCards.has(cardId)) return; // Уже выполненные фанты не трогаем
+                    if (openedCards.has(cardId)) return;
                     launchFant(slot, cardId);
                 });
 
@@ -483,13 +512,11 @@
         // Взлет Фанта
         function launchFant(slot, cardId) {
             lastClickedSlot = slot;
-            document.getElementById('sndOpen').play();
+            try { document.getElementById('sndOpen').play(); } catch(e){}
 
-            // Рендерим крупную карту в оверлее лицом к игроку
-            flyBackFace.style.background-image = `url('card_${cardId}.png')`;
+            flyBackFace.style.backgroundImage = `url('card_${cardId}.png'), url('card_${cardId}.jpg')`;
             overlayScene.classList.add('active');
 
-            // Запускаем 3D-анимацию взлета
             setTimeout(() => {
                 flyingCard.classList.add('zoomed');
                 setTimeout(() => {
@@ -500,58 +527,42 @@
 
         // Посадка на место (Кнопка ГОТОВО!)
         btnReady.addEventListener('click', () => {
-            document.getElementById('sndClose').play();
+            try { document.getElementById('sndClose').play(); } catch(e){}
             btnReady.classList.remove('show');
             flyingCard.classList.remove('zoomed');
 
-            // Ждем завершения анимации уменьшения карты
             setTimeout(() => {
                 overlayScene.classList.remove('active');
-                
                 if (lastClickedSlot) {
                     const id = parseInt(lastClickedSlot.dataset.id);
-                    openedCards.add(id); // Запоминаем, что карта вскрыта
-                    lastClickedSlot.classList.add('is-open'); // Переворачиваем в сетке лицом
+                    openedCards.add(id);
+                    lastClickedSlot.classList.add('is-open');
                 }
             }, 500);
         });
 
         // Космический Рандом (Кнопка ПЕРЕМЕШАТЬ)
         document.getElementById('btnMix').addEventListener('click', () => {
-            document.getElementById('sndShuffle').play();
+            try { document.getElementById('sndShuffle').play(); } catch(e){}
             
-            // Эффект встряхивания сетки
             gridContainer.classList.add('shake');
             setTimeout(() => gridContainer.classList.remove('shake'), 400);
 
-            // Полное обнуление логики
             openedCards.clear(); 
             
-            // Тасование Фишера-Йетса для абсолютного рандома
             for (let i = cardsData.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [cardsData[i], cardsData[j]] = [cardsData[j], cardsData[i]];
             }
 
-            // Пересобираем сетку (все карты вернутся рубашкой вверх на новых позициях)
             buildGrid();
         });
 
         // --- ЧАСТЬ 3: Броня от воровства контента (Анти-угон) ---
-        
-        // 1. Блокировка контекстного меню (Запрет долгого тапа)
         window.addEventListener('contextmenu', (e) => e.preventDefault());
-
-        // 2. Блокировка перетаскивания элементов (Drag & Drop)
         window.addEventListener('dragstart', (e) => e.preventDefault());
-
-        // 3. Железобетонная защита от горячих клавиш разработчика (F12, Ctrl+Shift+I и т.д.)
         window.addEventListener('keydown', (e) => {
-            if (
-                e.key === 'F12' ||
-                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) ||
-                (e.ctrlKey && e.key === 'U')
-            ) {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) || (e.ctrlKey && e.key === 'U')) {
                 e.preventDefault();
                 return false;
             }
