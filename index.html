@@ -3,382 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Фанты от инопоВ — Игровое поле</title>
+    <title>Фанты — Проверка Фона</title>
 
     <style>
+        /* Черный фон для всей страницы */
         html, body {
-            margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
-            background-color: #000000; user-select: none; -webkit-user-select: none;
-            -ms-user-select: none; -moz-user-select: none; font-family: sans-serif;
+            margin: 0; 
+            padding: 0; 
+            width: 100%; 
+            height: 100%; 
+            overflow: hidden;
+            background-color: #000000;
         }
         
-        /* Фиксированный контейнер 9:16 строго по центру */
+        /* Игровой контейнер 9:16 строго по центру */
         .game-container {
             margin: 0 auto;
             width: 100%;
             height: 100%;
             aspect-ratio: 9/16;
-            max-width: 100vh; /* Чтобы адекватно смотрелось на планшетах и ПК */
+            max-width: 100vh; /* Защита от растягивания на ПК */
+            
+            /* Подключаем наш фон */
             background-image: url('images/main_bg.png');
             background-size: cover;
             background-position: center;
-            position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            box-sizing: border-box;
-            padding: 20px 10px;
-        }
-
-        /* --- СЦЕНА 1: СТАРТОВАЯ КОЛОДА --- */
-        .initial-deck-box {
-            position: absolute;
-            width: 120px;
-            height: 168px;
-            z-index: 5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .deck-card-shadow {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-image: url('images/card_back.png');
-            background-size: cover;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-        }
-        .deck-card-shadow:nth-child(1) { transform: translate(-4px, -4px); }
-        .deck-card-shadow:nth-child(2) { transform: translate(-2px, -2px); }
-        .deck-card-shadow:nth-child(3) { transform: translate(0, 0); }
-
-        /* Парящая кнопка НАЧИНАЕМ */
-        .btn-start {
-            position: absolute;
-            bottom: -50px;
-            width: 160px;
-            cursor: pointer;
-            z-index: 6;
-            animation: floatBtn 2.5s infinite ease-in-out;
-            transition: transform 0.2s;
-        }
-        @keyframes floatBtn {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0); }
-        }
-
-        /* --- СЦЕНА 2: СЕТКА КАРТ 5х5 --- */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            grid-template-rows: repeat(5, 1fr);
-            gap: 6px;
-            width: 95%;
-            aspect-ratio: 5/7;
-            max-height: 75vh;
-            opacity: 0;
-            transform: scale(0.3);
-            transition: opacity 0.5s ease-out, transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 2;
-            pointer-events: none;
-        }
-        .cards-grid.active {
-            opacity: 1;
-            transform: scale(1);
-            pointer-events: auto;
-        }
-
-        /* Карточка в сетке (3D переворот) */
-        .card-item {
-            perspective: 1000px;
-            aspect-ratio: 1/1.4;
-            cursor: pointer;
+            background-repeat: no-repeat;
+            
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1); /* Легкое свечение границ для проверки */
             position: relative;
         }
-        .card-inner {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            transform-style: preserve-3d;
-            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .card-item.is-flipped .card-inner {
-            transform: rotateY(180deg);
-        }
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            border-radius: 6px;
-            background-size: cover;
-            background-position: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
-        .card-front {
-            background-image: url('images/card_back.png');
-        }
-        .card-back {
-            transform: rotateY(180deg);
-        }
-
-        /* Кнопка ПЕРЕМЕШАТЬ внизу */
-        .btn-mix {
-            margin-top: 25px;
-            width: 150px;
-            cursor: pointer;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-            z-index: 3;
-        }
-        .btn-mix.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* --- СЦЕНА 3: ВЗЛЁТ И УВЕЛИЧЕНИЕ ФАНТА --- */
-        .focus-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 20;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease;
-        }
-        .focus-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        
-        .flying-card-container {
-            width: 80%;
-            aspect-ratio: 1/1.4;
-            perspective: 1200px;
-            transform: scale(0.2) rotate(0deg);
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .focus-overlay.active .flying-card-container {
-            transform: scale(1) rotate(360deg);
-        }
-        .flying-card-inner {
-            width: 100%; height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s ease;
-            transform: rotateY(180deg); /* К игроку сразу лицом */
-        }
-        .flying-face {
-            position: absolute; width: 100%; height: 100%;
-            backface-visibility: hidden; -webkit-backface-visibility: hidden;
-            border-radius: 12px; background-size: cover; background-position: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
-        }
-        .flying-front { background-image: url('images/card_back.png'); transform: rotateY(0deg); }
-        .flying-back { transform: rotateY(180deg); }
-
-        /* Кнопка ГОТОВО */
-        .btn-ready {
-            margin-top: 25px;
-            width: 140px;
-            cursor: pointer;
-            transform: scale(0.8);
-            opacity: 0;
-            transition: opacity 0.3s ease 0.3s, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s;
-        }
-        .focus-overlay.active .btn-ready {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        /* Визуальный шейк при перемешивании */
-        @keyframes gridShake {
-            0% { transform: translate(0, 0); }
-            20% { transform: translate(-6px, 4px); }
-            40% { transform: translate(6px, -4px); }
-            60% { transform: translate(-4px, -4px); }
-            80% { transform: translate(4px, 4px); }
-            100% { transform: translate(0, 0); }
-        }
-        .shake-animation { animation: gridShake 0.4s ease-in-out; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
-    <!-- Звуковые эффекты -->
-    <audio id="sndStart" src="audio/start.mp3" preload="auto"></audio>
-    <audio id="sndShuffle" src="audio/shuffle.mp3" preload="auto"></audio>
-    <audio id="sndOpen" src="audio/card_open.mp3" preload="auto"></audio>
-    <audio id="sndClose" src="audio/card_close.mp3" preload="auto"></audio>
+    <div class="game-container"></div>
 
-    <!-- Главный контейнер игры -->
-    <div class="game-container">
-        
-        <!-- Начальная колода и кнопка НАЧИНАЕМ -->
-        <div class="initial-deck-box" id="startDeck">
-            <div class="deck-card-shadow"></div>
-            <div class="deck-card-shadow"></div>
-            <div class="deck-card-shadow"></div>
-            <img src="images/btn_start.png" class="btn-start" id="btnStartImg" alt="Начинаем">
-        </div>
-
-        <!-- Сетка 5х5 -->
-        <div class="cards-grid" id="grid"></div>
-
-        <!-- Кнопка Перемешать -->
-        <img src="images/btn_mix.png" class="btn-mix" id="btnMix" alt="Перемешать">
-
-    </div>
-
-    <!-- Полноэкранное окно фокуса для летящей карты -->
-    <div class="focus-overlay" id="focusOverlay">
-        <div class="flying-card-container">
-            <div class="flying-card-inner">
-                <div class="flying-face flying-front"></div>
-                <div class="flying-face flying-back" id="flyingCardBack"></div>
-            </div>
-        </div>
-        <img src="images/btn_ready.png" class="btn-ready" id="btnReady" alt="Готово">
-    </div>
-
-    <script>
-        const grid = document.getElementById('grid');
-        const startDeck = document.getElementById('startDeck');
-        const btnMix = document.getElementById('btnMix');
-        const focusOverlay = document.getElementById('focusOverlay');
-        const flyingCardBack = document.getElementById('flyingCardBack');
-        const btnReady = document.getElementById('btnReady');
-
-        const sndStart = document.getElementById('sndStart');
-        const sndShuffle = document.getElementById('sndShuffle');
-        const sndOpen = document.getElementById('sndOpen');
-        const sndClose = document.getElementById('sndClose');
-
-        // Генерируем массив из 25 карт
-        let cardsArray = [];
-        for (let i = 1; i <= 25; i++) {
-            cardsArray.push({ id: i, isFlipped: false });
-        }
-
-        let currentActiveCardIndex = null;
-
-        // Отрисовка карт в сетке
-        function createGrid() {
-            grid.innerHTML = '';
-            cardsArray.forEach((card, index) => {
-                const cardItem = document.createElement('div');
-                cardItem.className = 'card-item';
-                if (card.isFlipped) cardItem.classList.add('is-flipped');
-                cardItem.setAttribute('data-index', index);
-
-                cardItem.innerHTML = `
-                    <div class="card-inner">
-                        <div class="card-face card-front"></div>
-                        <div class="card-face card-back" style="background-image: url('images/card_${card.id}.png');"></div>
-                    </div>
-                `;
-                
-                cardItem.addEventListener('click', () => handleCardClick(index));
-                grid.appendChild(cardItem);
-            });
-        }
-
-        // Клик по кнопке НАЧИНАЕМ
-        document.getElementById('btnStartImg').addEventListener('click', () => {
-            sndStart.play().catch(()=>{});
-            
-            startDeck.style.transition = 'opacity 0.4s, transform 0.4s';
-            startDeck.style.opacity = '0';
-            startDeck.style.transform = 'scale(0.5)';
-            
-            setTimeout(() => {
-                startDeck.style.display = 'none';
-                createGrid();
-                grid.classList.add('active');
-                btnMix.classList.add('visible');
-            }, 400);
-        });
-
-        // Клик по закрытой карте (Взлет)
-        function handleCardClick(index) {
-            if (cardsArray[index].isFlipped) return; // Уже открытые не трогаем
-            
-            currentActiveCardIndex = index;
-            const cardData = cardsArray[index];
-
-            sndOpen.play().catch(()=>{});
-
-            // Подгружаем нужное лицо карты в летящий контейнер
-            flyingCardBack.style.backgroundImage = `url('images/card_${cardData.id}.png')`;
-            focusOverlay.classList.add('active');
-        }
-
-        // Клик по кнопке ГОТОВО (Посадка на место лицом вверх)
-        btnReady.addEventListener('click', () => {
-            if (currentActiveCardIndex === null) return;
-
-            sndClose.play().catch(()=>{});
-            focusOverlay.classList.remove('active');
-
-            // Фиксируем, что карта открыта
-            cardsArray[currentActiveCardIndex].isFlipped = true;
-            
-            const gridCard = document.querySelector(`.card-item[data-index="${currentActiveCardIndex}"]`);
-            if (gridCard) {
-                gridCard.classList.add('is-flipped');
-            }
-
-            currentActiveCardIndex = null;
-        });
-
-        // Клик по кнопке ПЕРЕМЕШАТЬ
-        btnMix.addEventListener('click', () => {
-            sndShuffle.play().catch(()=>{});
-
-            grid.classList.add('shake-animation');
-            setTimeout(() => { grid.classList.remove('shake-animation'); }, 400);
-
-            // Закрываем все карты назад
-            cardsArray.forEach(card => card.isFlipped = false);
-            
-            // Перемешиваем алгоритмом Фишера-Йетса
-            for (let i = cardsArray.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [cardsArray[i], cardsArray[j]] = [cardsArray[j], cardsArray[i]];
-            }
-
-            // Обновляем сетку
-            createGrid();
-        });
-
-        // --- БРОНЯ ОТ КОПИРОВАНИЯ ---
-        window.addEventListener('contextmenu', (e) => { e.preventDefault(); }, false);
-
-        document.addEventListener('dragstart', (e) => {
-            if (e.target.tagName === 'IMG' || e.target.tagName === 'DIV') {
-                e.preventDefault();
-            }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.keyCode == 123 || 
-                (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || 
-                (e.ctrlKey && e.keyCode == 85)) {
-                e.preventDefault();
-                return false;
-            }
-        });
-    </script>
 </body>
 </html>
