@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -5,24 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Фанты для всей семьи</title>
 
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="🎯 Игра Фанты 🚀">
-    <meta property="og:description" content="👉 НАЖИМАЙ И ИГРАЙ! 🚀">
-    <meta property="og:image" content="cover.png">
-    <meta property="og:image:width" content="1080">
-    <meta property="og:image:height" content="1920">
-
     <style>
-        /* Обнуление стилей и защита контента (Часть 3: Анти-угон) */
+        /* Базовые настройки экрана */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             user-select: none;
             -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            -webkit-touch-callout: none;
         }
 
         body, html {
@@ -30,97 +21,85 @@
             height: 100%;
             overflow: hidden;
             background-color: #111;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* Ограничитель игрового поля под пропорции 9:16 */
+        /* Контейнер игры под пропорции смартфона */
         .game-container {
             width: 100%;
             height: 100%;
-            max-width: 56.25vh;
-            max-height: 177.78vw;
+            max-width: 500px;
             position: relative;
             overflow: hidden;
             background: #222;
             box-shadow: 0 0 30px rgba(0,0,0,0.8);
         }
 
-        /* Главная Карусель */
-        .swiper-wrapper {
-            display: flex;
-            width: 300%;
-            height: 100%;
-            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-            will-change: transform;
-        }
-
-        .slide {
-            width: 33.333%;
-            height: 100%;
-            position: relative;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-
-        /* Поддержка PNG и JPG */
-        #slide-cover { background-image: url('cover.png'), url('cover.jpg'); }
-        #slide-rules { background-image: url('rules.png'), url('rules.jpg'); }
-        #slide-game { 
-            background: radial-gradient(circle, #2c3e50, #0f171e); 
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 10px;
-        }
-
-        /* Кнопки навигации «Далее» и «К игре» внизу экрана */
-        .nav-btn-next {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            padding: 14px 40px;
-            border-radius: 30px;
-            font-size: 18px;
-            font-weight: bold;
-            border: 1px solid rgba(255,255,255,0.4);
-            cursor: pointer;
-            z-index: 20;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            transition: background 0.2s, transform 0.1s;
-            -webkit-tap-highlight-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .nav-btn-next:active {
-            background: rgba(255, 255, 255, 0.4);
-            transform: translateX(-50%) scale(0.95);
-        }
-
-        /* --- ИГРОВОЕ ПОЛЕ --- */
-        .deck-scene {
+        /* Экраны игры (Изначально все скрыты, кроме первого) */
+        .screen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            display: none;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .screen.active {
             display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Подключение картинок фонов */
+        #screen-cover { background-image: url('cover.png'), url('cover.jpg'); }
+        #screen-rules { background-image: url('rules.png'), url('rules.jpg'); }
+        #screen-game { background: radial-gradient(circle, #2c3e50, #0f171e); }
+
+        /* Кнопки навигации «Далее» и «К игре» */
+        .nav-btn {
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 15px 45px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border: 1px solid rgba(255,255,255,0.4);
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.2s;
+        }
+        .nav-btn:active {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* --- ИГРОВОЙ ЭКРАН --- */
+        .game-sub-view {
+            width: 100%;
+            height: 100%;
+            display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 5;
-            transition: opacity 0.5s ease, pointer-events 0.5s ease;
+        }
+        .game-sub-view.active {
+            display: flex;
         }
 
+        /* Колода на старте */
         .main-deck {
             width: 160px;
             height: 240px;
@@ -132,154 +111,83 @@
             margin-bottom: 30px;
         }
 
-        /* Универсальный класс кнопок-картинок */
-        .btn {
+        /* Кнопки-картинки */
+        .game-btn {
             cursor: pointer;
             border: none;
             background: none;
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            transition: transform 0.2s ease;
             outline: none;
-            -webkit-tap-highlight-color: transparent;
-            z-index: 6;
         }
-        .btn:active { transform: scale(0.9); }
+        .game-btn:active { transform: scale(0.95); }
 
         .btn-start {
             width: 220px;
             height: 70px;
             background-image: url('btn_start.png'), url('btn_start.jpg');
-            animation: floatBtn 2s infinite ease-in-out;
         }
 
-        @keyframes floatBtn {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-
-        /* Игровая Сетка 5х5 */
-        .grid-scene {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.5s ease;
-        }
-
+        /* Сетка карт 5х5 */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            grid-template-rows: repeat(5, 1fr);
             gap: 6px;
             width: 100%;
             aspect-ratio: 1/1;
-            max-height: 60vh;
             padding: 5px;
-            perspective: 1000px;
         }
 
-        /* Карточка в сетке */
         .card-slot {
             width: 100%;
             height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            aspect-ratio: 1/1.4; /* Пропорции карты */
+            background-image: url('card_back.png'), url('card_back.jpg');
+            background-size: cover;
+            background-position: center;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
             cursor: pointer;
         }
 
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            border-radius: 6px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-            background-size: cover;
-            background-position: center;
-        }
-
-        .card-front {
-            background-image: url('card_back.png'), url('card_back.jpg');
-        }
-
-        .card-back {
-            transform: rotateY(180deg);
-        }
-
         .card-slot.is-open {
-            transform: rotateY(180deg);
+            box-shadow: none;
+            opacity: 0.8;
         }
 
         .btn-mix {
             width: 180px;
             height: 60px;
             background-image: url('btn_mix.png'), url('btn_mix.jpg');
-            margin-top: 15px;
+            margin-top: 25px;
         }
 
-        /* Сцена «Взлёт фанта» */
-        .overlay-scene {
+        /* Поп-ап открытой карты */
+        .overlay-card-view {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.85);
-            z-index: 30;
-            display: flex;
+            background: rgba(0,0,0,0.9);
+            display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease;
-            perspective: 1200px;
+            z-index: 100;
+        }
+        .overlay-card-view.active {
+            display: flex;
         }
 
-        .overlay-scene.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .flying-card {
-            width: 240px;
-            height: 360px;
-            transform-style: preserve-3d;
-            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform: scale(0.2) rotateY(0deg);
-        }
-
-        .flying-card.zoomed {
-            transform: scale(1) rotateY(180deg);
-        }
-
-        .fly-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            border-radius: 16px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        .big-card {
+            width: 260px;
+            height: 390px;
             background-size: cover;
             background-position: center;
-        }
-
-        .fly-front {
-            background-image: url('card_back.png'), url('card_back.jpg');
-        }
-
-        .fly-back {
-            transform: rotateY(180deg);
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
         }
 
         .btn-ready {
@@ -287,71 +195,41 @@
             height: 55px;
             background-image: url('btn_ready.png'), url('btn_ready.jpg');
             margin-top: 30px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            z-index: 35;
-        }
-
-        .btn-ready.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        @keyframes shakeGrid {
-            0% { transform: translate(0, 0); }
-            20% { transform: translate(-8px, 5px); }
-            40% { transform: translate(6px, -6px); }
-            60% { transform: translate(-5px, 4px); }
-            80% { transform: translate(4px, -3px); }
-            100% { transform: translate(0, 0); }
-        }
-
-        .shake {
-            animation: shakeGrid 0.4s ease-in-out;
-        }
-
-        img {
-            pointer-events: none;
-            -webkit-user-drag: none;
         }
     </style>
 </head>
 <body>
 
     <div class="game-container">
-        <div class="swiper-wrapper" id="mainSwiper">
-            
-            <div class="slide" id="slide-cover">
-                <button class="nav-btn-next" id="goRules">Далее 👉</button>
-            </div>
-
-            <div class="slide" id="slide-rules">
-                <button class="nav-btn-next" id="goGame">К игре 👉</button>
-            </div>
-
-            <div class="slide" id="slide-game">
-                
-                <div class="deck-scene" id="deckScene">
-                    <div class="main-deck"></div>
-                    <button class="btn btn-start" id="btnStart"></button>
-                </div>
-
-                <div class="grid-scene" id="gridScene">
-                    <div class="grid-container" id="gridContainer"></div>
-                    <button class="btn btn-mix" id="btnMix"></button>
-                </div>
-
-                <div class="overlay-scene" id="overlayScene">
-                    <div class="flying-card" id="flyingCard">
-                        <div class="fly-face fly-front"></div>
-                        <div class="fly-face fly-back" id="flyBackFace"></div>
-                    </div>
-                    <button class="btn btn-ready" id="btnReady"></button>
-                </div>
-
-            </div>
+        
+        <div class="screen active" id="screen-cover">
+            <div></div> <button class="nav-btn" id="btn-to-rules">Далее 👉</button>
         </div>
+
+        <div class="screen" id="screen-rules">
+            <div></div>
+            <button class="nav-btn" id="btn-to-game">К игре 👉</button>
+        </div>
+
+        <div class="screen" id="screen-game">
+            
+            <div class="game-sub-view active" id="view-deck">
+                <div class="main-deck"></div>
+                <button class="game-btn btn-start" id="btnStart"></button>
+            </div>
+
+            <div class="game-sub-view" id="view-grid">
+                <div class="grid-container" id="gridContainer"></div>
+                <button class="game-btn btn-mix" id="btnMix"></button>
+            </div>
+
+            <div class="overlay-card-view" id="view-overlay">
+                <div class="big-card" id="bigCardPhoto"></div>
+                <button class="game-btn btn-ready" id="btnReady"></button>
+            </div>
+
+        </div>
+
     </div>
 
     <audio id="sndStart" src="start.mp3" preload="auto"></audio>
@@ -360,54 +238,5 @@
     <audio id="sndShuffle" src="shuffle.mp3" preload="auto"></audio>
 
     <script>
-        // --- ЧАСТЬ 1: Карусель со свайпами И кнопками ---
-        const swiper = document.getElementById('mainSwiper');
-        let currentSlide = 0;
-        let startX = 0;
-
-        function updateSwiper() {
-            swiper.style.transform = `translateX(-${currentSlide * 33.333}%)`;
-        }
-
-        // Кнопки навигации
-        document.getElementById('goRules').addEventListener('click', (e) => {
-            e.stopPropagation();
-            currentSlide = 1;
-            updateSwiper();
-        });
-
-        document.getElementById('goGame').addEventListener('click', (e) => {
-            e.stopPropagation();
-            currentSlide = 2;
-            updateSwiper();
-        });
-
-        // Полноценная обработка свайпов пальцем по экрану
-        window.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX;
-        }, { passive: true });
-
-        window.addEventListener('touchend', (e) => {
-            let diffX = startX - e.changedTouches[0].clientX;
-            if (Math.abs(diffX) > 50) { 
-                if (diffX > 0 && currentSlide < 2) {
-                    currentSlide++; 
-                } else if (diffX < 0 && currentSlide > 0) {
-                    currentSlide--; 
-                }
-                updateSwiper();
-            }
-        }, { passive: true });
-
-
-        // --- ЧАСТЬ 2: Механика игрового процесса ---
-        const deckScene = document.getElementById('deckScene');
-        const gridScene = document.getElementById('gridScene');
-        const gridContainer = document.getElementById('gridContainer');
-        const overlayScene = document.getElementById('overlayScene');
-        const flyingCard = document.getElementById('flyingCard');
-        const flyBackFace = document.getElementById('flyBackFace');
-        const btnReady = document.getElementById('btnReady');
-
-        let cardsData = Array.from({ length: 25 }, (_, i) => i + 1);
-        let openedCards = new Set();
+        // --- ПЕРЕКЛЮЧЕНИЕ ОСНОВНЫХ ЭКРАНОВ ---
+        const scr
