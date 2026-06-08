@@ -219,24 +219,6 @@
             transform: rotateY(180deg);
         }
 
-        /* Подсказка */
-        .tap-hint {
-            color: #fff;
-            font-size: 18px;
-            font-weight: 900;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-            margin-bottom: 15px;
-            text-align: center;
-            letter-spacing: 1px;
-            animation: pulseText 1.2s infinite alternate;
-            transition: opacity 0.5s ease;
-        }
-
-        @keyframes pulseText {
-            0% { opacity: 0.4; transform: scale(0.95); }
-            100% { opacity: 1; transform: scale(1.05); }
-        }
-
         .btn-mix {
             width: 180px;
             height: 60px;
@@ -356,7 +338,6 @@
                 </div>
 
                 <div class="grid-scene" id="gridScene">
-                    <div class="tap-hint" id="tapHint">НАЖМИ НА ЛЮБУЮ КАРТУ</div>
                     <div class="grid-container" id="gridContainer"></div>
                     <button class="btn btn-mix" id="btnMix"></button>
                 </div>
@@ -408,11 +389,11 @@
 
         window.addEventListener('touchend', (e) => {
             let diffX = startX - e.changedTouches[0].clientX;
-            if (Math.abs(diffX) > 50) { // Чувствительность жеста
+            if (Math.abs(diffX) > 50) { 
                 if (diffX > 0 && currentSlide < 2) {
-                    currentSlide++; // Свайп влево — идем вперед
+                    currentSlide++; 
                 } else if (diffX < 0 && currentSlide > 0) {
-                    currentSlide--; // Свайп вправо — возвращаемся назад
+                    currentSlide--; 
                 }
                 updateSwiper();
             }
@@ -427,92 +408,6 @@
         const flyingCard = document.getElementById('flyingCard');
         const flyBackFace = document.getElementById('flyBackFace');
         const btnReady = document.getElementById('btnReady');
-        const tapHint = document.getElementById('tapHint');
 
         let cardsData = Array.from({ length: 25 }, (_, i) => i + 1);
         let openedCards = new Set();
-        let lastClickedSlot = null;
-
-        // Кнопка НАЧИНАЕМ
-        document.getElementById('btnStart').addEventListener('click', () => {
-            try { document.getElementById('sndStart').play(); } catch(e){}
-            deckScene.style.opacity = '0';
-            deckScene.style.pointerEvents = 'none';
-            
-            buildGrid();
-            gridScene.style.opacity = '1';
-            gridScene.style.pointerEvents = 'auto';
-
-            setTimeout(() => {
-                if(tapHint) {
-                    tapHint.style.opacity = '0';
-                    setTimeout(() => tapHint.remove(), 500);
-                }
-            }, 3000);
-        });
-
-        // Сборка сетки 5х5
-        function buildGrid() {
-            gridContainer.innerHTML = '';
-            cardsData.forEach((cardId, index) => {
-                const slot = document.createElement('div');
-                slot.className = 'card-slot';
-                slot.dataset.id = cardId;
-                slot.dataset.index = index;
-
-                if (openedCards.has(cardId)) {
-                    slot.classList.add('is-open');
-                }
-
-                slot.innerHTML = `
-                    <div class="card-face card-front"></div>
-                    <div class="card-face card-back" style="background-image: url('card_${cardId}.png'), url('card_${cardId}.jpg')"></div>
-                `;
-
-                slot.addEventListener('click', () => {
-                    if (openedCards.has(cardId)) return;
-                    launchFant(slot, cardId);
-                });
-
-                gridContainer.appendChild(slot);
-            });
-        }
-
-        // Взлет Фанта
-        function launchFant(slot, cardId) {
-            lastClickedSlot = slot;
-            try { document.getElementById('sndOpen').play(); } catch(e){}
-
-            flyBackFace.style.backgroundImage = `url('card_${cardId}.png'), url('card_${cardId}.jpg')`;
-            overlayScene.classList.add('active');
-
-            setTimeout(() => {
-                flyingCard.classList.add('zoomed');
-                setTimeout(() => {
-                    btnReady.classList.add('show');
-                }, 400);
-            }, 50);
-        }
-
-        // Посадка на место (Кнопка ГОТОВО!)
-        btnReady.addEventListener('click', () => {
-            try { document.getElementById('sndClose').play(); } catch(e){}
-            btnReady.classList.remove('show');
-            flyingCard.classList.remove('zoomed');
-
-            setTimeout(() => {
-                overlayScene.classList.remove('active');
-                if (lastClickedSlot) {
-                    const id = parseInt(lastClickedSlot.dataset.id);
-                    openedCards.add(id);
-                    lastClickedSlot.classList.add('is-open');
-                }
-            }, 500);
-        });
-
-        // Космический Рандом (Кнопка ПЕРЕМЕШАТЬ)
-        document.getElementById('btnMix').addEventListener('click', () => {
-            try { document.getElementById('sndShuffle').play(); } catch(e){}
-            
-            gridContainer.classList.add('shake');
-            setTimeout(() => gridContainer.classList.remove('shake'), 400);
