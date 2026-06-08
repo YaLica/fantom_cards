@@ -10,7 +10,7 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="👉 НАЖИМАЙ И ИГРАЙ! 🚀">
     <meta property="og:description" content="Интерактивная игра «Фанты от инопоВ». Проведите незабываемое время всей семьёй!">
-    <meta property="og:image" content="https://yalica.github.io/uzimuzi-web/cover.png"> <!-- Здесь при необходимости укажи точный URL твоей обложки -->
+    <meta property="og:image" content="https://yalica.github.io/uzimuzi-web/cover.png">
     <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="1080">
     <meta property="og:image:height" content="1920">
@@ -57,8 +57,6 @@
         #screen2 .page-content { background-image: url('rules.png'); }
         #screen3 .page-content { background-image: url('images/main_bg.png'); }
 
-        .static-img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-
         /* Пульсирующая подсказка свайпа */
         .hint-badge {
             position: absolute; top: 20px; right: 20px; background: rgba(0, 0, 0, 0.7); color: #ffffff;
@@ -85,11 +83,11 @@
             padding: 20px 10px;
         }
 
-        /* Стартовая колода (вид до начала игры) */
+        /* Стартовая колода */
         .initial-deck-box {
             position: absolute;
             width: 120px;
-            height: 168px; /* Пропорции карты */
+            height: 168px;
             z-index: 5;
             display: flex;
             justify-content: center;
@@ -104,7 +102,6 @@
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.5);
         }
-        /* Слоеная колода */
         .deck-card-shadow:nth-child(1) { transform: translate(-4px, -4px); }
         .deck-card-shadow:nth-child(2) { transform: translate(-2px, -2px); }
         .deck-card-shadow:nth-child(3) { transform: translate(0, 0); }
@@ -132,7 +129,7 @@
             grid-template-rows: repeat(5, 1fr);
             gap: 6px;
             width: 95%;
-            aspect-ratio: 5/7; /* Примерное соотношение под сетку */
+            aspect-ratio: 5/7;
             max-height: 70vh;
             opacity: 0;
             transform: scale(0.3);
@@ -146,7 +143,7 @@
             pointer-events: auto;
         }
 
-        /* Контейнер карточки (3D Эффекты) */
+        /* Контейнер карточки (3D) */
         .card-item {
             perspective: 1000px;
             aspect-ratio: 1/1.4;
@@ -161,7 +158,6 @@
             transform-style: preserve-3d;
             transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        /* Состояние переворота лицом вверх */
         .card-item.is-flipped .card-inner {
             transform: rotateY(180deg);
         }
@@ -181,30 +177,9 @@
         }
         .card-back {
             transform: rotateY(180deg);
-            /* Фон задается динамически из JS (card_1 ... card_25) */
         }
 
-        /* Всплывающий текст-подсказка */
-        .tap-hint-text {
-            position: absolute;
-            top: 12%;
-            color: #ffffff;
-            font-size: 16px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-            background: rgba(0,0,0,0.5);
-            padding: 6px 16px;
-            border-radius: 15px;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            z-index: 3;
-            pointer-events: none;
-            text-transform: uppercase;
-            text-align: center;
-        }
-
-        /* Кнопка ПЕРЕМЕШАТЬ внизу поля */
+        /* Кнопка ПЕРЕМЕШАТЬ */
         .btn-mix {
             margin-top: 20px;
             width: 150px;
@@ -219,7 +194,7 @@
             transform: translateY(0);
         }
 
-        /* --- СЦЕНА ВЗЛЁТА ФАНТА (ОКНО ФОКУСА) --- */
+        /* --- СЦЕНА ВЗЛЁТА ФАНТА --- */
         .focus-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -238,7 +213,6 @@
             pointer-events: auto;
         }
         
-        /* Летящая крупная карта */
         .flying-card-container {
             width: 75%;
             aspect-ratio: 1/1.4;
@@ -254,7 +228,7 @@
             position: relative;
             transform-style: preserve-3d;
             transition: transform 0.6s ease;
-            transform: rotateY(180deg); /* Сразу открыта лицом */
+            transform: rotateY(180deg);
         }
         .flying-face {
             position: absolute; width: 100%; height: 100%;
@@ -279,7 +253,7 @@
             transform: scale(1);
         }
 
-        /* Визуальный шейк (встряхивание) сетки при перемешивании */
+        /* Анимация встряхивания сетки */
         @keyframes gridShake {
             0% { transform: translate(0, 0); }
             20% { transform: translate(-6px, 4px); }
@@ -293,7 +267,7 @@
 </head>
 <body oncontextmenu="return false;">
 
-    <!-- Аудио элементы -->
+    <!-- Аудио -->
     <audio id="sndStart" src="audio/start.mp3" preload="auto"></audio>
     <audio id="sndShuffle" src="audio/shuffle.mp3" preload="auto"></audio>
     <audio id="sndOpen" src="audio/card_open.mp3" preload="auto"></audio>
@@ -320,9 +294,6 @@
             <div class="page-content">
                 <div class="game-wrapper">
                     
-                    <!-- Всплывающая подсказка тапа -->
-                    <div class="tap-hint-text" id="tapHint">Нажми на любую карту</div>
-
                     <!-- Начальная колода с кнопкой СТАРТ -->
                     <div class="initial-deck-box" id="startDeck">
                         <div class="deck-card-shadow"></div>
@@ -342,7 +313,7 @@
 
     </div>
 
-    <!-- Полноэкранный оверлей для взлёта и увеличения фанта -->
+    <!-- Полноэкранный оверлей для взлёта фанта -->
     <div class="focus-overlay" id="focusOverlay">
         <div class="flying-card-container">
             <div class="flying-card-inner">
@@ -386,7 +357,7 @@
             swiper.style.transform = `translateX(-${currentPage * 33.3333}%)`;
         }
 
-        // Позволяем клику по обложке перелистывать на правила
+        // Клик по обложке перелистывает на правила
         document.getElementById('screen1').addEventListener('click', () => {
             currentPage = 1;
             updateSwiperPosition();
@@ -396,26 +367,22 @@
         const grid = document.getElementById('grid');
         const startDeck = document.getElementById('startDeck');
         const btnMix = document.getElementById('btnMix');
-        const tapHint = document.getElementById('tapHint');
         const focusOverlay = document.getElementById('focusOverlay');
         const flyingCardBack = document.getElementById('flyingCardBack');
         const btnReady = document.getElementById('btnReady');
 
-        // Звуки
         const sndStart = document.getElementById('sndStart');
         const sndShuffle = document.getElementById('sndShuffle');
         const sndOpen = document.getElementById('sndOpen');
         const sndClose = document.getElementById('sndClose');
 
-        // Генерируем массив индексов карт (от 1 до 25)
         let cardsArray = [];
         for (let i = 1; i <= 25; i++) {
             cardsArray.push({ id: i, isFlipped: false });
         }
 
-        let currentActiveCardIndex = null; // Индекс выбранной карты в сетке
+        let currentActiveCardIndex = null;
 
-        // Функция рендеринга сетки
         function createGrid() {
             grid.innerHTML = '';
             cardsArray.forEach((card, index) => {
@@ -441,37 +408,30 @@
             e.stopPropagation();
             sndStart.play().catch(()=>{});
             
-            // Плавное исчезновение стартовой колоды
             startDeck.style.transition = 'opacity 0.4s, transform 0.4s';
             startDeck.style.opacity = '0';
             startDeck.style.transform = 'scale(0.5)';
             
             setTimeout(() => {
                 startDeck.style.display = 'none';
-                // Сборка и появление сетки 5х5
                 createGrid();
                 grid.classList.add('active');
                 btnMix.classList.add('visible');
-                
-                // Всплытие текста-подсказки на 3 секунды
-                tapHint.style.opacity = '1';
-                setTimeout(() => { tapHint.style.opacity = '0'; }, 3000);
             }, 400);
         });
 
         // Клик по карте в сетке (Взлет фанта)
         function handleCardClick(index) {
-            if (cardsArray[index].isFlipped) return; // Игнорируем уже открытые карты
+            if (cardsArray[index].isFlipped) return;
             
             currentActiveCardIndex = index;
             const cardData = cardsArray[index];
 
             sndOpen.play().catch(()=>{});
 
-            // Задаем картинку для крупного плана в оверлее
-            flyingCardBack.style.background-image = `url('images/card_${cardData.id}.png')`;
+            // ИСПРАВЛЕНО: Правильное свойство JS стиля camelCase
+            flyingCardBack.style.backgroundImage = `url('images/card_${cardData.id}.png')`;
             
-            // Включаем оверлей фокуса
             focusOverlay.classList.add('active');
         }
 
@@ -480,11 +440,8 @@
             if (currentActiveCardIndex === null) return;
 
             sndClose.play().catch(()=>{});
-            
-            // Выключаем оверлей фокуса
             focusOverlay.classList.remove('active');
 
-            // Отмечаем карту в массиве как перевернутую и обновляем ее в сетке
             cardsArray[currentActiveCardIndex].isFlipped = true;
             
             const gridCard = document.querySelector(`.card-item[data-index="${currentActiveCardIndex}"]`);
@@ -495,15 +452,13 @@
             currentActiveCardIndex = null;
         });
 
-        // Клик по кнопке ПЕРЕМЕШАТЬ (Космический рандом)
+        // Клик по кнопке ПЕРЕМЕШАТЬ
         btnMix.addEventListener('click', () => {
             sndShuffle.play().catch(()=>{});
 
-            // Добавляем эффект тряски для сетки
             grid.classList.add('shake-animation');
             setTimeout(() => { grid.classList.remove('shake-animation'); }, 400);
 
-            // Закрываем все карты и перемешиваем массив случайным образом (Алгоритм Фишера-Йетса)
             cardsArray.forEach(card => card.isFlipped = false);
             
             for (let i = cardsArray.length - 1; i > 0; i--) {
@@ -511,22 +466,18 @@
                 [cardsArray[i], cardsArray[j]] = [cardsArray[j], cardsArray[i]];
             }
 
-            // Перерисовываем сетку закрытыми картами
             createGrid();
         });
 
-        // --- 3. АНТИ-УГОН (БРОНЯ ОТ ВОРОВСТВА) ---
-        // Запрет контекстного меню (блокирует долгий тап на смартфонах)
+        // --- 3. АНТИ-УГОН ---
         window.addEventListener('contextmenu', (e) => { e.preventDefault(); }, false);
 
-        // Запрет drag-and-drop картинок (нельзя утащить элементы)
         document.addEventListener('dragstart', (e) => {
             if (e.target.tagName === 'IMG' || e.target.tagName === 'DIV') {
                 e.preventDefault();
             }
         });
 
-        // Блокировка горячих клавиш вызова консоли (F12, Ctrl+Shift+I, Ctrl+U)
         document.addEventListener('keydown', (e) => {
             if (e.keyCode == 123 || 
                 (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || 
